@@ -1,0 +1,21 @@
+# process
+*.pid
+
+# Translations
+*.mo
+*.pot
+
+# PyBuilder
+target/
+
+
+# Pycharm
+.idea
+
+
+# Jupyter NB Checkpoints
+.ipynb_checkpoints/
+
+
+# Mac OS-specific storage files
+.DS_Store

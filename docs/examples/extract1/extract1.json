@@ -1,0 +1,15 @@
+{
+  "input": {
+    "type": "csv"
+  },
+  "extract": [
+    [
+      {
+        "column_name": "crim"
+      },
+      {
+        "column_name": "medv"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://json-schema.org/draft-07/schema#",
+  "title": "ExtraDSL",
+  "description": "Extraction Specification",
+  "definitions": {
+    "column_name": {
+      "type": "string",
+      "description": "The column name to select",
+      "example": "colA"
+    },
+    "column_rename": {
+      "type": "string",
+      "description": "The new name for the column",
+      "example": "colZ"
+    },
+    "schemaObject": {
+      "type": "object",
+      "required": [
+        "column_name"
+      ],
+      "properties": {
+        "column_name": {
+          "$ref": "#/definitions/column_name"
+        }
+      }
+    },
+    "extract": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/definitions/schemaObject"
+        }
+      }
+    },
+    "csv_input_options": {
+      "type": "object",
+      "properties": {
+        "delimiter": {
+          "type": "string"
+        },
+        "quotechar": {
+          "type": "string"
+        },
+        "newline": {
+          "type": "string"
+        }
+      }
+    },
+    "input_options": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/csv_input_options"
+        }
+      ]
+    },
+    "input": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "csv"
+        },
+        "options": {
+          "$ref": "#/definitions/input_options"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": [
+    "extract"
+  ],
+  "properties": {
+    "extract": {
+      "$ref": "#/definitions/extract"
+    },
+    "input": {
+      "$ref": "#/definitions/input"
+    }
+  }
+}

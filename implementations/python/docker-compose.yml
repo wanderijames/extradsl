@@ -1,0 +1,14 @@
+version: '3.6'
+
+services:
+  app:
+    restart: always
+    container_name: extradsl
+    image: extradsl-python
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - "DEBIAN_NAME=${DEBIAN_NAME:-stretch}"
+    volumes:
+      - .:/app/
