@@ -1,7 +1,9 @@
 """Parse the JSON config"""
 import json
+import re
 from typing import Any, Dict, Generator, List
-from pyarrow import Table
+from pyarrow import array, Table
+import numpy as np
 
 
 class Config:
@@ -28,6 +30,27 @@ class Config:
             yield extract_
 
 
+class Select:
+
+    pattern = re.compile(r"(?!\d)\w+")
+
+    def __init__(self, table: Table, statement: str):
+        """"""
+        self.table = table
+        self.statement = statement
+
+    def compute(self):
+        """select statement with multiple columns"""
+        exec_statement = re.sub(self.pattern, self.repl, self.statement)
+        ans = eval(exec_statement)
+        return array(ans)
+
+    @staticmethod
+    def repl(match_obj):
+        column = match_obj.group(0).strip("'")
+        return f"np.array(self.table.column('{column}'), copy=False)"
+
+
 class Extraction:
     """Step extraction"""
 
@@ -35,26 +58,36 @@ class Extraction:
         self.table = table
         self.instructions = instructions
         self._source_columns = []
-        self._sink_columns = []
+
+    def key_val(self, key: str) -> Any:
+        """Get value for a key in instructions"""
+        return [
+            item for item in self.instructions if key in item]
 
     @property
     def source_columns(self):
         if self._source_columns:
             return self._source_columns
-        self._source_columns = [
-            item["column_name"] for item in self.instructions]
+        key = "select"
+        cols = [
+            re.findall(Select.pattern, item[key]) for item in self.key_val(key)
+        ]
+        columns = set([])
+        for c in cols:
+            columns.update(set([a.strip("'") for a in c]))
+        self._source_columns = list(columns)
         return self._source_columns
-
-    @property
-    def sink_columns(self):
-        if self._sink_columns:
-            return self._sink_columns
-        self._sink_columns = [
-            item["rename"] for item in self.instructions]
-        return self._sink_columns
 
     def execute(self) -> Table:
         """Carry out the extraction"""
-        return self.table.select(self.source_columns)
+        new_table = self.table.select(self.source_columns)
+        compute_statements = self.key_val("as")
+        for d in compute_statements:
+            new_table = new_table.append_column(
+                d["as"],
+                Select(new_table, d["select"]).compute()
+            )
+        print(new_table)
+        return new_table
 
 

@@ -5,10 +5,18 @@
   "extract": [
     [
       {
-        "column_name": "crim"
+        "select": "crim"
       },
       {
-        "column_name": "medv"
+        "select": "medv"
+      },
+      {
+        "select": "crim + medv",
+        "as": "new"
+      },
+      {
+        "select": "(crim + crim + medv) * 5",
+        "as": "new2"
       }
     ]
   ]
