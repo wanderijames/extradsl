@@ -4,12 +4,16 @@
   "title": "ExtraDSL",
   "description": "Extraction Specification",
   "definitions": {
-    "column_name": {
+    "select": {
       "type": "string",
-      "description": "The column name to select",
-      "example": "colA"
+      "description": "Column selection by lookup or simple aggregation",
+      "examples": [
+        "colA",
+        "colA + colB",
+        "(colA + colB + colC) * 5"
+      ]
     },
-    "column_rename": {
+    "as": {
       "type": "string",
       "description": "The new name for the column",
       "example": "colZ"
@@ -17,11 +21,11 @@
     "schemaObject": {
       "type": "object",
       "required": [
-        "column_name"
+        "select"
       ],
       "properties": {
-        "column_name": {
-          "$ref": "#/definitions/column_name"
+        "select": {
+          "$ref": "#/definitions/select"
         }
       }
     },
